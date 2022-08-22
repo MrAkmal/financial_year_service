@@ -38,7 +38,7 @@ public class FinancialYearService {
 
     public Mono<FinancialYear> update(FinancialYearUpdateDTO dto) {
 
-        return repository.update(dto);
+        return repository.save(mapper.fromUpdateDTO(dto));
 
     }
 
