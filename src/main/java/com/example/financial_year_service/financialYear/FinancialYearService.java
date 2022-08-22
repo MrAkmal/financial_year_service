@@ -8,10 +8,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-
 @Service
 public class FinancialYearService {
 
@@ -42,14 +38,7 @@ public class FinancialYearService {
 
     public Mono<FinancialYear> update(FinancialYearUpdateDTO dto) {
 
-        Mono<FinancialYear> financialYearMono = repository.findById(dto.getId());
-
-        FinancialYear block = financialYearMono.block();
-        if (Objects.isNull(block)) throw new RuntimeException("Not Found");
-
-        FinancialYear entity = mapper.fromUpdateDTO(dto);
-
-        return repository.save(entity);
+        return repository.update(dto);
 
     }
 
