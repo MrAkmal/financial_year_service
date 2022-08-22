@@ -4,11 +4,9 @@ import com.example.financial_year_service.financialYear.dto.FinancialYearCreateD
 import com.example.financial_year_service.financialYear.dto.FinancialYearDTO;
 import com.example.financial_year_service.financialYear.dto.FinancialYearUpdateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 @RestController
@@ -25,41 +23,34 @@ public class FinancialYearController {
 
 
     @PostMapping
-    public ResponseEntity<Integer> save(@RequestBody FinancialYearCreateDTO dto) {
-        Integer id = service.save(dto);
+    public Mono<FinancialYear> save(@RequestBody FinancialYearCreateDTO dto) {
+        return service.save(dto);
 
-        return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
 
     @PutMapping
-    public ResponseEntity<Integer> update(@RequestBody FinancialYearUpdateDTO dto) {
-        Integer id = service.update(dto);
+    public Mono<FinancialYear> update(@RequestBody FinancialYearUpdateDTO dto) {
+        return service.update(dto);
 
-        return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Integer> delete(@PathVariable("id") int deletedId) {
-        Integer id = service.delete(deletedId);
+    public Mono<Void> delete(@PathVariable("id") int deletedId) {
+        return service.delete(deletedId);
 
-        return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<FinancialYearDTO> get(@PathVariable("id") int id) {
-        FinancialYearDTO dto = service.get(id);
-
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+    public Mono<FinancialYearDTO> get(@PathVariable("id") int id) {
+        return service.get(id);
     }
 
     @GetMapping
-    public ResponseEntity<List<FinancialYearDTO>> getAll() {
-        List<FinancialYearDTO> dto = service.getAll();
-
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+    public Flux<FinancialYearDTO> getAll() {
+        return service.getAll();
     }
 
 

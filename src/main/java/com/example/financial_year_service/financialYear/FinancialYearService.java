@@ -5,9 +5,11 @@ import com.example.financial_year_service.financialYear.dto.FinancialYearDTO;
 import com.example.financial_year_service.financialYear.dto.FinancialYearUpdateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 public class FinancialYearService {
@@ -22,57 +24,59 @@ public class FinancialYearService {
     }
 
 
-    public Integer save(FinancialYearCreateDTO dto) {
+    public Mono<FinancialYear> save(FinancialYearCreateDTO dto) {
 
         FinancialYear entity = mapper.fromCreateDTO(dto);
 
-        FinancialYear financialYear = repository.save(entity);
-
-        return financialYear.getId();
+        return repository.save(entity);
 
     }
 
 
-    public Integer delete(int financialYear) {
+    public Mono<Void> delete(int financialYear) {
 
-        repository.deleteById(financialYear);
-
-        return financialYear;
+        return repository.deleteById(financialYear);
     }
 
 
-    public Integer update(FinancialYearUpdateDTO dto) {
+    public Mono<FinancialYear> update(FinancialYearUpdateDTO dto) {
 
-        Optional<FinancialYear> optional = repository.findById(dto.getId());
+        Mono<FinancialYear> financialYearMono = repository.findById(dto.getId());
 
-        if (optional.isEmpty()) throw new RuntimeException("FinancialYear not found by id - " + dto.getId());
+        FinancialYear block = financialYearMono.block();
+        if (Objects.isNull(block)) throw new RuntimeException("Not Found");
 
         FinancialYear entity = mapper.fromUpdateDTO(dto);
 
-        FinancialYear financialYear = repository.save(entity);
-
-        return financialYear.getId();
+        return repository.save(entity);
 
     }
 
 
-    public FinancialYearDTO get(int financialYearId) {
+    public Mono<FinancialYearDTO> get(int financialYearId) {
 
-        Optional<FinancialYear> optional = repository.findById(financialYearId);
+        Mono<FinancialYear> mono = repository.findById(financialYearId);
 
-        if (optional.isEmpty()) throw new RuntimeException("FinancialYear not found by id - " + financialYearId);
+        FinancialYear block = mono.block();
 
-        return mapper.toDTO(optional.get());
+        if (Objects.isNull(block)) throw new RuntimeException("FinancialYear not found by id - " + financialYearId);
+
+        FinancialYearDTO dto = mapper.toDTO(block);
+
+        return Mono.just(dto);
     }
 
 
-    public List<FinancialYearDTO> getAll() {
+    public Flux<FinancialYearDTO> getAll() {
 
-        List<FinancialYear> financialYears = repository.findAll();
+        Flux<FinancialYear> all = repository.findAll();
 
-        if (financialYears.isEmpty()) throw new RuntimeException("No financial years");
+        List<FinancialYear> block = all.collectList().block();
 
-        return mapper.toDTO(financialYears);
+        List<FinancialYearDTO> dto = mapper.toDTO(Objects.requireNonNull(block));
+
+        return Flux.fromIterable(dto);
+
     }
 
 }

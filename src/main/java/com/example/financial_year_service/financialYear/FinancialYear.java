@@ -1,28 +1,30 @@
 package com.example.financial_year_service.financialYear;
 
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
 @Table(name = "financial_year")
 public class FinancialYear {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column("id")
     private int id;
 
 
+    @Column("year")
     private String year;
 
 
-    @Column(name = "is_default")
+    @Column("is_default")
     private boolean isDefault;
 
 }
