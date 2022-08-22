@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,25 +56,21 @@ public class FinancialYearService {
 
     public Mono<FinancialYearDTO> get(int financialYearId) {
 
-        Mono<FinancialYear> mono = repository.findById(financialYearId);
+        return repository.findById(financialYearId).map(mapper::toDTO);
 
-        FinancialYear block = mono.block();
-
-        if (Objects.isNull(block)) throw new RuntimeException("FinancialYear not found by id - " + financialYearId);
-
-        FinancialYearDTO dto = mapper.toDTO(block);
-
-        return Mono.just(dto);
     }
 
 
     public Flux<FinancialYearDTO> getAll() {
 
-        Flux<FinancialYear> all = repository.findAll();
+        return repository.findAll().map(mapper::toDTO);
 
-        Mono<List<FinancialYearDTO>> mono = all.collectList().map(mapper::toDTO);
 
-        return mono.flatMapMany(Flux::fromIterable);
+//        Mono<List<FinancialYearDTO>> mono = all.collectList().map(mapper::toDTO);
+
+//        mono.block().stream().forEach(System.out::println);
+
+//        return mono.flatMapMany(Flux::fromIterable);
     }
 
 
