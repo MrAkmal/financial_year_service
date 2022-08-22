@@ -71,12 +71,10 @@ public class FinancialYearService {
 
         Flux<FinancialYear> all = repository.findAll();
 
-        List<FinancialYear> block = all.collectList().block();
+        Mono<List<FinancialYearDTO>> mono = all.collectList().map(mapper::toDTO);
 
-        List<FinancialYearDTO> dto = mapper.toDTO(Objects.requireNonNull(block));
-
-        return Flux.fromIterable(dto);
-
+        return mono.flatMapMany(Flux::fromIterable);
     }
+
 
 }
