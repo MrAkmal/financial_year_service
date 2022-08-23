@@ -26,6 +26,8 @@ public class FinancialYearController {
 
     @PostMapping
     public Mono<FinancialYear> save(@RequestBody FinancialYearCreateDTO dto) {
+        System.out.println("dto.getYear() = " + dto.getYear());
+        System.out.println("dto.isDefault() = " + dto.isDefault());
         return service.save(dto);
 
     }

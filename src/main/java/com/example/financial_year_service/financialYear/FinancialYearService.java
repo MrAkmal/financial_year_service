@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
+
 @Service
 public class FinancialYearService {
 
@@ -23,9 +25,15 @@ public class FinancialYearService {
 
     public Mono<FinancialYear> save(FinancialYearCreateDTO dto) {
 
-        FinancialYear entity = mapper.fromCreateDTO(dto);
 
-        return repository.save(entity);
+        if (dto.isDefault()) {
+            Mono<FinancialYear> byDefaultIsTrue = repository.findByDefault(dto.isDefault());
+
+            return byDefaultIsTrue.switchIfEmpty(repository.findByYear(dto.getYear()).switchIfEmpty(repository.save(mapper.fromCreateDTO(dto))));
+
+        }
+
+        return repository.findByYear(dto.getYear()).switchIfEmpty(repository.save(mapper.fromCreateDTO(dto)));
 
     }
 
@@ -38,7 +46,25 @@ public class FinancialYearService {
 
     public Mono<FinancialYear> update(FinancialYearUpdateDTO dto) {
 
-        return repository.save(mapper.fromUpdateDTO(dto));
+
+        if (dto.isDefault()) {
+            Mono<FinancialYear> byDefaultIsTrue = repository.findByDefault(dto.isDefault());
+
+            return byDefaultIsTrue
+                    .switchIfEmpty(repository.findByYear(dto.getYear()).switchIfEmpty(repository.save(mapper.fromUpdateDTO(dto))))
+                    .flatMap(financialYear -> {
+                        if (financialYear.getId() == dto.getId()) return repository.save(mapper.fromUpdateDTO(dto));
+                        else return Mono.empty();
+                    });
+        }
+
+        return repository.findByYear(dto.getYear())
+                .switchIfEmpty(repository.save(mapper.fromUpdateDTO(dto)))
+                .flatMap(financialYear -> {
+                    if (financialYear.getId() == dto.getId()) return repository.save(mapper.fromUpdateDTO(dto));
+                    else return Mono.empty();
+                });
+
 
     }
 

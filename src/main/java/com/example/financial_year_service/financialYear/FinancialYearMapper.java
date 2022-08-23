@@ -27,7 +27,7 @@ public class FinancialYearMapper {
 
         return FinancialYear.builder()
                 .id(dto.getId())
-                .year(dto.getFinancialYear())
+                .year(dto.getYear())
                 .isDefault(dto.isDefault())
                 .build();
     }
@@ -37,7 +37,7 @@ public class FinancialYearMapper {
 
         return FinancialYearDTO.builder()
                 .id(financialYear.getId())
-                .financialYear(financialYear.getYear())
+                .year(financialYear.getYear())
                 .isDefault(financialYear.isDefault())
                 .build();
     }
