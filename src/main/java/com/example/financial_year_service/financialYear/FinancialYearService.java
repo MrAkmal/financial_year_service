@@ -4,11 +4,10 @@ import com.example.financial_year_service.financialYear.dto.FinancialYearCreateD
 import com.example.financial_year_service.financialYear.dto.FinancialYearDTO;
 import com.example.financial_year_service.financialYear.dto.FinancialYearUpdateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Objects;
 
 @Service
 public class FinancialYearService {
@@ -78,7 +77,8 @@ public class FinancialYearService {
 
     public Flux<FinancialYearDTO> getAll() {
 
-        return repository.findAll().map(mapper::toDTO);
+
+        return repository.findAll(Sort.by(Sort.Direction.ASC, "year")).map(mapper::toDTO);
 
 
 //        Mono<List<FinancialYearDTO>> mono = all.collectList().map(mapper::toDTO);
@@ -86,6 +86,14 @@ public class FinancialYearService {
 //        mono.block().stream().forEach(System.out::println);
 
 //        return mono.flatMapMany(Flux::fromIterable);
+    }
+
+
+    public Flux<FinancialYearDTO> getAllBySort(String fieldName, boolean type) {
+
+        if (type) return repository.findAll(Sort.by(Sort.Direction.ASC, fieldName)).map(mapper::toDTO);
+        return repository.findAll(Sort.by(Sort.Direction.DESC, fieldName)).map(mapper::toDTO);
+
     }
 
 

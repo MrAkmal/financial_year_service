@@ -58,4 +58,9 @@ public class FinancialYearController {
     }
 
 
+    @GetMapping("/sort")
+    public Flux<FinancialYearDTO> getAllBySort(@RequestParam("fieldName") String fieldName, @RequestParam("type") boolean type) {
+        return service.getAllBySort(fieldName,type);
+    }
+
 }
